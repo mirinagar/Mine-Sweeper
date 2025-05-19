@@ -270,7 +270,9 @@ function onCellMarked(elCell, i, j) {
 
 function checkGameOver() {
     const revealed = gLevel.SIZE ** 2 - gLevel.MINES
-    if (gGame.revealedCount === revealed && gGame.markedCount === gLevel.MINES) gameOverWinner()
+    if (gGame.revealedCount === revealed) gameOverWinner()
+
+    //&& gGame.markedCount === gLevel.MINES
 }
 
 function gameOverWinner() {
@@ -278,11 +280,23 @@ function gameOverWinner() {
     isGameOver = true
     gGame.isOn = false
     clearInterval(gIntervalTimeId)
-    
+
     var elButton = document.querySelector('.score button')
     elButton.innerText = WIN
 
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[i].length; j++) {
+            const elCell = document.querySelector(`.cell-${i}-${j}`)
+            if (gBoard[i][j].isMine) {
+                elCell.innerHTML = FLAG
+            }
+        }
+    }
+
+    var elFlags = document.querySelector('.flags')
+    elFlags.innerText = '00'
 }
+
 
 function gameOverLoser(cell) {
     console.log('gameOverLoser')
