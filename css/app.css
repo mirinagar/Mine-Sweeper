@@ -109,9 +109,9 @@ table {
 }
 
 .hints {
-	margin-left: 100px;
+	margin-left: 150px;
 	height: 25px;
-	width: 200px;
+	width: 70px;
 	background-color: rgb(12, 12, 11);
 	display: flex;
 	align-items: center;

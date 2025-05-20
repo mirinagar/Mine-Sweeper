@@ -25,7 +25,7 @@ gLevel = {
 }
 
 function onInit() {
-renderScoreBoards()
+    renderScoreBoards()
 
     gMineCounter = 0
     gBoard = buildBoard()
@@ -40,7 +40,7 @@ renderScoreBoards()
         secsPassed: 0
     }
 
-    
+
 }
 
 function setLevel(size) {
@@ -113,12 +113,12 @@ function renderScoreBoards() {
 
     var elHint2 = document.querySelector('.hint2')
     elHint2.innerText = HINT
-     elHint1.style.display = "block"
+    elHint1.style.display = "block"
     elHint2.style.backgroundColor = ""
 
     var elHint3 = document.querySelector('.hint3')
     elHint3.innerText = HINT
-     elHint1.style.display = "block"
+    elHint1.style.display = "block"
     elHint3.style.backgroundColor = ""
 
 }
@@ -364,7 +364,7 @@ function restart() {
 
 function updateTimer() {
     gGame.secsPassed++
-   
+
     var elTime = document.querySelector('.time')
     var time = gGame.secsPassed
     elTime.innerText = time
@@ -398,10 +398,14 @@ function useLive(elCell, i, j) {
 
 
 function useHint(elHint, hintNumber) {
+    if (isHint) return
+
     isHint = true
     elHint.style.backgroundColor = "yellow"
     console.log('elHint', elHint)
     gHitNum = hintNumber
+
+
 }
 
 function revealHint(elCell, cellI, cellJ) {
@@ -416,7 +420,7 @@ function revealHint(elCell, cellI, cellJ) {
             renderCellColor(location, "yellow")
 
             if (gBoard[i][j].isMine) renderCell(location, MINE)
-            // if (gBoard[i][j].minesAroundCount === 0) renderCell(location, EMPTY)
+
             if (gBoard[i][j].minesAroundCount > 0) renderCell(location, gBoard[i][j].minesAroundCount)
         }
     }
@@ -438,6 +442,7 @@ function revealHint(elCell, cellI, cellJ) {
         const elHint = document.querySelector(className)
         elHint.style.display = "none"
         isHint = false
+
 
     }, "1500")
 }
