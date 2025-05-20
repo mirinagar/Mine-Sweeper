@@ -7,7 +7,7 @@ const FLAG = '🚩'
 const NORMAL = '😀'
 const LOSE = '🤯'
 const WIN = '😎'
-
+const HINT = '💡'
 
 var gGame
 var gBoard
@@ -15,6 +15,9 @@ var gLevel
 var gIntervalTimeId
 var isGameOver
 var gMineCounter
+var gLivesCounter = 1
+var isHint = false
+var gHitNum
 
 gLevel = {
     SIZE: 4,
@@ -22,6 +25,8 @@ gLevel = {
 }
 
 function onInit() {
+renderScoreBoards()
+
     gMineCounter = 0
     gBoard = buildBoard()
     console.log(gBoard)
@@ -35,53 +40,32 @@ function onInit() {
         secsPassed: 0
     }
 
-    renderScore()
+    
 }
 
 function setLevel(size) {
 
     var mines = 0
-    if (size === 4) mines = 2
-    if (size === 8) mines = 14
-    if (size === 12) mines = 32
+    if (size === 4) {
+        mines = 2
+        gLivesCounter = 1
+    }
+    if (size === 8) {
+        mines = 14
+        gLivesCounter = 2
+    }
+    if (size === 12) {
+        mines = 32
+        gLivesCounter = 3
+    }
     gLevel = {
         SIZE: size,
         MINES: mines
     }
 
-    onInit()
+    restart()
 }
 
-function renderScore() {
-
-    var elScore = document.querySelector('.score')
-
-    var elButton = elScore.querySelector('button')
-    elButton.innerText = NORMAL
-
-    var elFlags = document.querySelector('.flags')
-    elFlags.innerText = '0' + gLevel.MINES
-
-    var elTime = document.querySelector('.time')
-    elTime.innerText = '000'
-
-
-}
-
-function updateTimer() {
-    gGame.secsPassed++
-    console.log(gGame.secsPassed)
-    var elTime = document.querySelector('.time')
-    var time = gGame.secsPassed
-    elTime.innerText = time
-
-}
-
-function updateFlags() {
-    var elFlags = document.querySelector('.flags')
-    elFlags.innerText = gLevel.MINES - gMineCounter
-
-}
 
 function buildBoard() {
     const size = gLevel.SIZE
@@ -104,6 +88,41 @@ function buildBoard() {
     renderBoard(board)
     return board
 }
+
+function renderScoreBoards() {
+
+    var elScore = document.querySelector('.score')
+
+    var elButton = elScore.querySelector('button')
+    elButton.innerText = NORMAL
+
+    var elFlags = document.querySelector('.flags')
+    elFlags.innerText = '0' + gLevel.MINES
+
+    var elTime = document.querySelector('.time')
+    elTime.innerText = '000'
+
+    var elLives = document.querySelector('.lives')
+    elLives.innerText = gLivesCounter + ' LIVES LEFT'
+
+    var elHint1 = document.querySelector('.hint1')
+    elHint1.innerText = HINT
+    elHint1.style.display = "block"
+    elHint1.style.backgroundColor = ""
+
+
+    var elHint2 = document.querySelector('.hint2')
+    elHint2.innerText = HINT
+     elHint1.style.display = "block"
+    elHint2.style.backgroundColor = ""
+
+    var elHint3 = document.querySelector('.hint3')
+    elHint3.innerText = HINT
+     elHint1.style.display = "block"
+    elHint3.style.backgroundColor = ""
+
+}
+
 
 function randomMines(board, i, j) {
     gBoard[i][j].isRevealed = true
@@ -166,6 +185,11 @@ function onCellClicked(elCell, i, j) {
         gGame.revealedCount++
         gIntervalTimeId = setInterval(updateTimer, 1000)
     }
+
+    if (isHint) {
+        revealHint(elCell, i, j)
+        return
+    }
     const cell = gBoard[i][j]
     elCell.style.backgroundColor = "white"
     if (!gBoard[i][j].isRevealed) {
@@ -180,11 +204,15 @@ function onCellClicked(elCell, i, j) {
     }
 
     else if (cell.type === MINE) {
-        elCell.innerHTML = MINE
+        if (gLivesCounter > 1) {
 
-        gameOverLoser(cell)
+            useLive(elCell, i, j)
+        } else {
+            elCell.innerHTML = MINE
+            gameOverLoser(cell)
+        }
+
     }
-
     else if (cell.type === EMPTY) {
 
         elCell.innerHTML = EMPTY
@@ -192,6 +220,8 @@ function onCellClicked(elCell, i, j) {
     }
     checkGameOver()
     console.log('CLICK')
+
+
 
 }
 
@@ -295,6 +325,8 @@ function gameOverWinner() {
 
     var elFlags = document.querySelector('.flags')
     elFlags.innerText = '00'
+    var elLives = document.querySelector('.lives')
+    elLives.innerText = 'YOU WON!'
 }
 
 
@@ -303,6 +335,9 @@ function gameOverLoser(cell) {
     isGameOver = true
     gGame.isOn = false
     clearInterval(gIntervalTimeId)
+
+    var elLives = document.querySelector('.lives')
+    elLives.innerText = 'GAME OVER'
 
     var elButton = document.querySelector('.score button')
     elButton.innerText = LOSE
@@ -323,4 +358,86 @@ function gameOverLoser(cell) {
 
 function restart() {
     onInit()
+}
+
+
+
+function updateTimer() {
+    gGame.secsPassed++
+   
+    var elTime = document.querySelector('.time')
+    var time = gGame.secsPassed
+    elTime.innerText = time
+
+}
+
+function updateFlags() {
+    var elFlags = document.querySelector('.flags')
+    elFlags.innerText = gLevel.MINES - gMineCounter
+
+}
+
+function useLive(elCell, i, j) {
+    gLivesCounter--
+    gGame.revealedCount--
+    gBoard[i][j].isRevealed = false
+
+
+    var elLives = document.querySelector('.lives')
+    elLives.innerText = gLivesCounter + ' LIVES LEFT'
+
+    elCell.innerHTML = MINE
+    elCell.style.backgroundColor = "yellow"
+
+    setTimeout(() => {
+        elCell.innerHTML = EMPTY
+        elCell.style.backgroundColor = "#c4c1c1"
+    }, "1000")
+
+}
+
+
+function useHint(elHint, hintNumber) {
+    isHint = true
+    elHint.style.backgroundColor = "yellow"
+    console.log('elHint', elHint)
+    gHitNum = hintNumber
+}
+
+function revealHint(elCell, cellI, cellJ) {
+    console.log('HINT')
+    const className = '.' + 'hint' + gHitNum
+
+    for (var i = cellI - 1; i <= cellI + 1; i++) {
+        if (i < 0 || i >= gBoard.length) continue
+        for (var j = cellJ - 1; j <= cellJ + 1; j++) {
+            if (j < 0 || j >= gBoard[i].length) continue
+            const location = { i, j }
+            renderCellColor(location, "yellow")
+
+            if (gBoard[i][j].isMine) renderCell(location, MINE)
+            // if (gBoard[i][j].minesAroundCount === 0) renderCell(location, EMPTY)
+            if (gBoard[i][j].minesAroundCount > 0) renderCell(location, gBoard[i][j].minesAroundCount)
+        }
+    }
+
+
+    setTimeout(() => {
+
+        for (var i = cellI - 1; i <= cellI + 1; i++) {
+            if (i < 0 || i >= gBoard.length) continue
+            for (var j = cellJ - 1; j <= cellJ + 1; j++) {
+                if (j < 0 || j >= gBoard[i].length) continue
+                const location = { i, j }
+                renderCellColor(location, "#c4c1c1")
+                renderCell(location, EMPTY)
+
+            }
+        }
+
+        const elHint = document.querySelector(className)
+        elHint.style.display = "none"
+        isHint = false
+
+    }, "1500")
 }

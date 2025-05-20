@@ -47,6 +47,13 @@ function renderCell(location, value) {
     elCell.innerHTML = value
 }
 
+function renderCellColor(location, color) {
+    // Select the elCell and set the value
+    const elCell = document.querySelector(`.cell-${location.i}-${location.j}`)
+    elCell.style.backgroundColor = color
+}
+
+
 function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }

@@ -1,12 +1,20 @@
 body {
+	align-items: center;
 	background-color: black;
 	text-align: center;
 	color: lightgray;
 	font-family: Arial, Helvetica, sans-serif;
 }
 
+button {
+	height: 22px;
+	margin: 5px;
+	font-size: 15px;
+}
+
 table {
-	margin: 40px auto;
+	margin-left: auto;
+	margin-right: auto;
 	border: 1px solid rgb(112, 109, 109);
 	background-color: rgb(196, 193, 193);
 	border-collapse: collapse;
@@ -21,7 +29,7 @@ table {
 	cursor: pointer;
 	color: blue;
 	font-weight: bold;
-	
+
 }
 
 .hide {
@@ -29,7 +37,7 @@ table {
 }
 
 .score {
-	width: 200px;
+	width: 400px;
 	height: 30px;
 	background-color: rgb(93, 219, 219);
 	padding: 5px;
@@ -37,38 +45,103 @@ table {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	
 
 }
 
 .score button {
-	
-	width: 30px;
-	height: 30px;
-	font-size: larger;
+
+	width: 37px;
+	height: 37px;
+	font-size: 25px;
 	padding: 0px;
 	background-color: gray;
-	
+
 }
 
 .flags {
 	background-color: rgb(8, 8, 8);
-	margin-right: 50px;
+	margin-right: 70px;
 	color: brown;
-	height: 20px;
-	width: 30px;
+	height: 25px;
+	width: 40px;
+	font-size: 20px;
 
 }
 
 .time {
 	background-color: rgb(12, 12, 11);
-	margin-left: 50px;
+	margin-left: 70px;
 	color: brown;
-	height: 20px;
-	width: 30px;
+	height: 25px;
+	width: 40px;
+	font-size: 20px;
 
 }
 
 .levels {
-margin: auto 0px 20px;
+	margin: auto 0px 10px;
+	
 }
+
+
+.extra {
+	width: 400px;
+	height: 30px;
+	/* background-color: aliceblue; */
+	padding: 5px;
+	margin: 7px auto;
+	display: flex;
+	align-items: center;
+
+	justify-content: center;
+
+}
+
+.lives {
+	background-color: rgb(12, 12, 11);
+
+	color: rgb(209, 215, 96);
+	height: 20px;
+	width: 130px;
+	font-size: large;
+	border: dashed;
+	
+}
+
+.hints {
+	margin-left: 100px;
+	height: 25px;
+	width: 200px;
+	background-color: rgb(12, 12, 11);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.hint1 {
+	/* margin-left: 170px; */
+	height: 25px;
+	width: 20px;
+	cursor: pointer;
+	font-size: 20px;
+	display: block;
+}
+
+.hint2 {
+	/* margin-left: 5px; */
+	height: 25px;
+	width: 20px;
+	cursor: pointer;
+	font-size: 20px;
+	display: block;
+}
+
+.hint3 {
+	/* margin-left: 5px; */
+	height: 25px;
+	width: 20px;
+	cursor: pointer;
+	font-size: 20px;
+	display: block;
+}
+

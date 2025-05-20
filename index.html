@@ -12,17 +12,27 @@
 <body onload="onInit()">
     <h1>Mine Sweeper</h1>
 
-<div class="levels">
-    <button onclick="setLevel(4)">Beginner</button>
-    <button onclick="setLevel(8)">Medium</button>
-    <button onclick="setLevel(12)">Expert</button>
+    <div class="levels">
+        <button onclick="setLevel(4)">Beginner</button>
+        <button onclick="setLevel(8)">Medium</button>
+        <button onclick="setLevel(12)">Expert</button>
 
-</div>
+    </div>
 
     <div class="score">
         <div class="flags">000</div>
         <button onclick="restart()"></button>
         <div class="time">000</div>
+    </div>
+
+    <div class="extra">
+        <div class="lives"></div>
+        
+      <div class="hints">
+        <div class="hint1" onclick="useHint(this, 1)" >0</div>
+        <div class="hint2" onclick="useHint(this, 2)">0</div>
+        <div class="hint3" onclick="useHint(this, 3)">0</div>
+        </div>
     </div>
 
 
@@ -31,6 +41,9 @@
         </tbody>
     </table>
 
+<Footer>
+    <p> Miri Nagar 2025</p>
+</Footer>
 
     <script src="js/util.js"></script>
     <script src="js/game.js"></script>
