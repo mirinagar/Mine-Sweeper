@@ -40,7 +40,6 @@ function onInit() {
         secsPassed: 0
     }
 
-
 }
 
 function setLevel(size) {
@@ -63,7 +62,8 @@ function setLevel(size) {
         MINES: mines
     }
 
-    restart()
+    onInit()
+    return
 }
 
 
@@ -126,16 +126,21 @@ function renderScoreBoards() {
 
 function randomMines(board, i, j) {
     gBoard[i][j].isRevealed = true
+    const emptyPoss = findEmptyPos(gBoard)
+
     for (var i = 0; i < gLevel.MINES; i++) {
-        var pos = findEmptyPos(gBoard)
-        console.log('pos', pos)
+        const randIdx = getRandomInt(0, emptyPoss.length)
+        const pos = emptyPoss[randIdx]
+
         board[pos.i][pos.j].type = MINE
         board[pos.i][pos.j].isMine = true
+        emptyPoss.splice(randIdx, 1)
     }
 }
 
+
 function findEmptyPos(board) {
-    var emptyPoss = []
+    const emptyPoss = []
     for (var i = 0; i < board.length; i++) {
         for (var j = 0; j < board[i].length; j++) {
             if (gBoard[i][j].isRevealed === false) {
@@ -144,10 +149,10 @@ function findEmptyPos(board) {
             }
         }
     }
-    var randIdx = getRandomInt(0, emptyPoss.length)
-    console.log('emptyPoss[randIdx]', emptyPoss[randIdx])
-    return emptyPoss[randIdx]
+
+    return emptyPoss
 }
+
 
 function setMinesNegsCount(board) {
     for (var i = 0; i < board.length; i++) {
@@ -176,8 +181,10 @@ function countNegs(cellI, cellJ) {
 
 
 function onCellClicked(elCell, i, j) {
-    if (isGameOver) return
 
+    if (isGameOver) return
+    if (gBoard[i][j].isMarked) return
+    checkGameOver()
     if (!gGame.isOn) {
         randomMines(gBoard, i, j)
         setMinesNegsCount(gBoard)
@@ -186,10 +193,12 @@ function onCellClicked(elCell, i, j) {
         gIntervalTimeId = setInterval(updateTimer, 1000)
     }
 
+
     if (isHint) {
         revealHint(elCell, i, j)
         return
     }
+
     const cell = gBoard[i][j]
     elCell.style.backgroundColor = "white"
     if (!gBoard[i][j].isRevealed) {
@@ -200,7 +209,7 @@ function onCellClicked(elCell, i, j) {
     if (cell.minesAroundCount) {
         elCell.innerHTML = cell.minesAroundCount
         renderNumberColor(elCell, cell)
-
+        checkGameOver()
     }
 
     else if (cell.type === MINE) {
@@ -217,11 +226,10 @@ function onCellClicked(elCell, i, j) {
 
         elCell.innerHTML = EMPTY
         expandReveal(i, j)
+        checkGameOver()
     }
-    checkGameOver()
+
     console.log('CLICK')
-
-
 
 }
 
@@ -277,11 +285,12 @@ function onCellMarked(elCell, i, j) {
     if (!gBoard[i][j].isRevealed) {
 
         if (!gBoard[i][j].isMarked) {
-            elCell.innerHTML = FLAG
             gBoard[i][j].isMarked = true
+            elCell.innerHTML = FLAG
             gMineCounter++
             updateFlags()
             if (gBoard[i][j].isMine) gGame.markedCount++
+            checkGameOver()
 
         } else {
             elCell.innerHTML = EMPTY
@@ -294,22 +303,23 @@ function onCellMarked(elCell, i, j) {
     }
     console.log('gMineCounter', gMineCounter)
     console.log('gGame.markedCount', gGame.markedCount)
-    console.log('FLAG')
-}
 
+}
 
 function checkGameOver() {
     const revealed = gLevel.SIZE ** 2 - gLevel.MINES
+    console.log('gGame.markedCount', gGame.markedCount)
     if (gGame.revealedCount === revealed) gameOverWinner()
 
     //&& gGame.markedCount === gLevel.MINES
 }
 
 function gameOverWinner() {
+    clearInterval(gIntervalTimeId)
     console.log('gameOverWinner')
     isGameOver = true
     gGame.isOn = false
-    clearInterval(gIntervalTimeId)
+
 
     var elButton = document.querySelector('.score button')
     elButton.innerText = WIN
@@ -357,12 +367,13 @@ function gameOverLoser(cell) {
 
 
 function restart() {
-    onInit()
+    setLevel(gLevel.SIZE)
 }
 
 
 
 function updateTimer() {
+    if (!gGame.isOn) return
     gGame.secsPassed++
 
     var elTime = document.querySelector('.time')
@@ -433,9 +444,17 @@ function revealHint(elCell, cellI, cellJ) {
             for (var j = cellJ - 1; j <= cellJ + 1; j++) {
                 if (j < 0 || j >= gBoard[i].length) continue
                 const location = { i, j }
-                renderCellColor(location, "#c4c1c1")
-                renderCell(location, EMPTY)
-
+                if (gBoard[i][j].isRevealed) {
+                    renderCellColor(location, "white")
+                    if (gBoard[i][j].minesAroundCount) {
+                        renderCell(location, gBoard[i][j].minesAroundCount)
+                    } else renderCell(location, EMPTY)
+                } else {
+                    renderCellColor(location, "#c4c1c1")
+                    if (gBoard[i][j].isMarked) renderCell(location, FLAG)
+                    else renderCell(location, EMPTY)
+                    
+                }
             }
         }
 
