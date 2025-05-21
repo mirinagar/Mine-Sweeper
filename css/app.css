@@ -6,10 +6,39 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
-button {
+h1 {
+	margin-top: 5px;
+}
+
+.light {
+	background-color: #ffffff;
+	color: rgb(112, 161, 213);
+}
+
+.mode-btn button {
+	border-radius: 5px;
+	margin-left: 650px;
+	margin-top: 10px;
+	background-color: rgb(74, 117, 235);
+}
+
+.btn-dark {
+	color: black;
+}
+
+.btn-light {
+	color: white;
+}
+
+.hide {
+	display: none;
+}
+
+.levels button {
 	height: 22px;
 	margin: 5px;
 	font-size: 15px;
+	border-radius: 5px;
 }
 
 table {
@@ -38,7 +67,7 @@ table {
 
 .score {
 	width: 400px;
-	height: 30px;
+	height: 35px;
 	background-color: rgb(93, 219, 219);
 	padding: 5px;
 	margin: auto;
@@ -75,12 +104,10 @@ table {
 	height: 25px;
 	width: 40px;
 	font-size: 20px;
-
 }
 
 .levels {
 	margin: auto 0px 10px;
-	
 }
 
 
@@ -98,21 +125,21 @@ table {
 }
 
 .lives {
-	background-color: rgb(12, 12, 11);
+	/* background-color: rgb(12, 12, 11); */
 
-	color: rgb(209, 215, 96);
+	color: rgb(239, 216, 12);
 	height: 20px;
 	width: 130px;
 	font-size: large;
 	border: dashed;
-	
+
 }
 
 .hints {
 	margin-left: 150px;
 	height: 25px;
 	width: 70px;
-	background-color: rgb(12, 12, 11);
+	/* background-color: rgb(12, 12, 11); */
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -145,3 +172,14 @@ table {
 	display: block;
 }
 
+.btn-undo {
+	text-align: center;
+	border-radius: 50%;
+	border-width: 3px;
+	border-color: rgb(35, 248, 64);
+
+	margin-top: 10px;
+	font-size: large;
+	font-weight: bold;
+
+}
