@@ -19,6 +19,11 @@ var gLivesCounter = 1
 var isHint = false
 var gHintNum
 var gLocation
+var gSafeClick = 3
+var isMegaHint = false
+var gMegaHintArr = []
+var countMegaHints = 0
+var onClickStop = false
 
 gLevel = {
     SIZE: 4,
@@ -29,10 +34,13 @@ function onInit() {
     renderScoreBoards()
 
     gMineCounter = 0
+    isMegaHint = false
+
+    countMegaHints = 0
+
     gBoard = buildBoard()
     console.log(gBoard)
     isGameOver = false
-
 
     gGame = {
         isOn: false,
@@ -40,6 +48,8 @@ function onInit() {
         markedCount: 0,
         secsPassed: 0
     }
+
+    clearInterval(gIntervalTimeId)
 
 }
 
@@ -127,7 +137,7 @@ function renderScoreBoards() {
 
 function randomMines(board, i, j) {
     gBoard[i][j].isRevealed = true
-    const emptyPoss = findEmptyPos(gBoard)
+    const emptyPoss = findEmptyPoss(gBoard)
 
     for (var i = 0; i < gLevel.MINES; i++) {
         const randIdx = getRandomInt(0, emptyPoss.length)
@@ -140,7 +150,7 @@ function randomMines(board, i, j) {
 }
 
 
-function findEmptyPos(board) {
+function findEmptyPoss(board) {
     const emptyPoss = []
     for (var i = 0; i < board.length; i++) {
         for (var j = 0; j < board[i].length; j++) {
@@ -182,8 +192,9 @@ function countNegs(cellI, cellJ) {
 
 
 function onCellClicked(elCell, i, j) {
-    gLocation = { i, j }
 
+    gLocation = { i, j }
+    if (onClickStop) return
     if (isGameOver) return
     if (gBoard[i][j].isMarked) return
 
@@ -198,6 +209,13 @@ function onCellClicked(elCell, i, j) {
 
     if (isHint) {
         revealHint(elCell, i, j)
+        return
+    }
+
+    if (isMegaHint) {
+        const location = { i, j }
+        gMegaHintArr.push(location)
+        if (gMegaHintArr.length === 2) revealMegaHint()
         return
     }
 
@@ -306,18 +324,14 @@ function onCellMarked(elCell, i, j) {
 
         }
     }
-    console.log('gMineCounter', gMineCounter)
-    console.log('gGame.markedCount', gGame.markedCount)
 
 }
 
 function checkGameOver() {
 
     const revealed = gLevel.SIZE ** 2 - gLevel.MINES
-    console.log('gGame.markedCount', gGame.markedCount)
     if (gGame.revealedCount === revealed) gameOverWinner()
 
-    //&& gGame.markedCount === gLevel.MINES
 }
 
 function gameOverWinner() {
@@ -374,6 +388,7 @@ function gameOverLoser(cell) {
 
 function restart() {
     setLevel(gLevel.SIZE)
+    
 }
 
 
@@ -425,6 +440,7 @@ function useHint(elHint, hintNumber) {
 }
 
 function revealHint(elCell, cellI, cellJ) {
+    onClickStop = true
     console.log('HINT')
     const className = '.' + 'hint' + gHintNum
 
@@ -466,7 +482,7 @@ function revealHint(elCell, cellI, cellJ) {
         const elHint = document.querySelector(className)
         elHint.style.display = "none"
         isHint = false
-
+        onClickStop = false
 
     }, "1500")
 }
@@ -563,4 +579,79 @@ function expandRevealRevers(cellI, cellJ) {
             }
         }
     }
+}
+
+function activateSafeClick() {
+    if (gSafeClick === 0) return
+    onClickStop = true
+    gSafeClick--
+    const emptyPoss = []
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[i].length; j++) {
+            if (!gBoard[i][j].isRevealed && !gBoard[i][j].isMine) {
+                var pos = { i, j }
+                emptyPoss.push(pos)
+
+            }
+        }
+    }
+    const randIdx = getRandomInt(0, emptyPoss.length)
+    const location = emptyPoss[randIdx]
+    console.log('location', location)
+
+    renderCellColor(location, "#7ec8eb")
+
+    setTimeout(() => {
+        onClickStop = false
+        renderCellColor(location, "#c4c1c1")
+    }, "1500")
+
+
+}
+
+function activateMegaHint() {
+    if (countMegaHints >= 1) return
+    isMegaHint = true
+
+}
+
+function revealMegaHint() {
+    onClickStop = true
+    countMegaHints++
+    console.log('gMegaHintArr', gMegaHintArr)
+
+    for (var i = gMegaHintArr[0].i; i <= gMegaHintArr[1].i; i++) {
+        for (var j = gMegaHintArr[0].j; j <= gMegaHintArr[1].j; j++) {
+            var location = { i, j }
+            console.log('location', location)
+            renderCellColor(location, "#ee6291")
+            if (gBoard[i][j].isMine) renderCell(location, MINE)
+            if (gBoard[i][j].minesAroundCount > 0) renderCell(location, gBoard[i][j].minesAroundCount)
+        }
+    }
+
+
+    setTimeout(() => {
+
+        for (var i = gMegaHintArr[0].i; i <= gMegaHintArr[1].i; i++) {
+            for (var j = gMegaHintArr[0].j; j <= gMegaHintArr[1].j; j++) {
+                var location = { i, j }
+                if (gBoard[i][j].isRevealed) {
+                    renderCellColor(location, "white")
+                    if (gBoard[i][j].minesAroundCount) {
+                        renderCell(location, gBoard[i][j].minesAroundCount)
+                    } else renderCell(location, EMPTY)
+                } else {
+                    renderCellColor(location, "#c4c1c1")
+                    if (gBoard[i][j].isMarked) renderCell(location, FLAG)
+                    else renderCell(location, EMPTY)
+
+                }
+            }
+        }
+        onClickStop = false
+        gMegaHintArr = []
+        isMegaHint = false
+    }, "2000")
+
 }
